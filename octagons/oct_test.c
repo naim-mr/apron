@@ -98,7 +98,7 @@ char check(oct_t* o)
     if (!o->m) return 'c'; /* ok */
     /* now check that closure(o->m) = o->closed */
     cl = hmat_copy(pr,o->m,o->dim);
-    hmat_close(cl,o->dim);
+    hmat_close(cl,o->dim,oct_tight_intdim(pr,o->intdim));
     for (i=0;i<matsize(o->dim);i++)
       if (bound_cmp(cl[i],o->closed[i])) {
 	hmat_free(pr,cl,o->dim);
@@ -493,7 +493,7 @@ void test_incremental_closure(void)
 	if (lrand48()%10>8) random_bound(o->closed[matpos2(i,2*v+1)]);
       }
       o->m = hmat_copy(pr,o->closed,dim);
-      if (hmat_close_incremental(o->closed,dim,v)) RESULT('o');
+      if (hmat_close_incremental(o->closed,dim,oct_tight_intdim(pr,o->intdim),v)) RESULT('o');
       else RESULT(check(o));
     }
     else  RESULT('o');

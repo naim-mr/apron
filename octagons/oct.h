@@ -41,6 +41,12 @@ extern "C" {
 ap_manager_t* oct_manager_alloc(void);
 /* Creates a new manager for the octagon library. */
 
+void oct_set_tight_closure(ap_manager_t* man, bool b);
+/* Enables/disables the tight closure on integer dimensions*/
+ 
+bool oct_get_tight_closure(ap_manager_t* man);
+
+
 
 /* ============================================================ */
 /* Supplementary functions & options */

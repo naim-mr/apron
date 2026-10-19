@@ -179,7 +179,7 @@ bool hmat_add_lincons(oct_internal_t* pr, bound_t* b, size_t intdim, size_t dim,
 
       /* can we delay incremental closure further? */
       if (*respect_closure && closure_pending && var_pending!=u.i) {
-	if (hmat_close_incremental(b,dim,intdim,var_pending)) return true;
+	if (hmat_close_incremental(b,dim,oct_tight_intdim(pr,intdim),var_pending)) return true;
       }
       closure_pending = 1;
       var_pending = u.i;
@@ -199,7 +199,7 @@ bool hmat_add_lincons(oct_internal_t* pr, bound_t* b, size_t intdim, size_t dim,
       /* can we delay incremental closure further? */
       if (*respect_closure && closure_pending &&
 	  var_pending!=u.i && var_pending!=u.j) {
-	if (hmat_close_incremental(b,dim,intdim,var_pending)) return true;
+	if (hmat_close_incremental(b,dim,oct_tight_intdim(pr,intdim),var_pending)) return true;
       }
       closure_pending = 1;
       var_pending = (var_pending==u.j) ? u.j : u.i;
@@ -407,7 +407,7 @@ bool hmat_add_lincons(oct_internal_t* pr, bound_t* b, size_t intdim, size_t dim,
 
   /* apply pending incremental closure now */
   if (*respect_closure && closure_pending)
-    if (hmat_close_incremental(b,dim,intdim,var_pending)) return true;
+    if (hmat_close_incremental(b,dim,oct_tight_intdim(pr,intdim),var_pending)) return true;
 
   return false;
 }
@@ -614,7 +614,7 @@ static void hmat_assign(oct_internal_t* pr, uexpr u, bound_t* m,
     bound_set(m[matpos2(2*d,i)],pr->tmp[0]);
     bound_set(m[matpos2(i,2*d)],pr->tmp[1]);
     if (*respect_closure)
-      hmat_close_incremental(m,dim,intdim,d);
+      hmat_close_incremental(m,dim,oct_tight_intdim(pr,intdim),d);
   }
 
   else if (u.type==UNARY && u.coef_i==-1) {
@@ -1044,7 +1044,7 @@ oct_t* oct_assign_linexpr_array(ap_manager_t* man,
 
   /* now close & remove temporary variables */
   if (pr->funopt->algorithm>=0) {
-    if (hmat_close(mm,a->dim+size,a->intdim)) {
+    if (hmat_close(mm,a->dim+size,oct_tight_intdim(pr,a->intdim))) {
       /* empty */
       hmat_free(pr,mm,a->dim+size);
       return oct_set_mat(pr,a,NULL,NULL,destructive);
@@ -1158,7 +1158,7 @@ oct_t* oct_substitute_linexpr_array(ap_manager_t* man,
 
   /* now close */
   if (pr->funopt->algorithm>=0) {
-    if (hmat_close(mm,a->dim+size, a->intdim)) {
+    if (hmat_close(mm,a->dim+size,oct_tight_intdim(pr,a->intdim))) {
       /* empty */
       hmat_free(pr,mm,a->dim+size);
       return oct_set_mat(pr,a,NULL,NULL,destructive);
