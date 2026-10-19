@@ -59,6 +59,25 @@ bool hmat_s_step(bound_t* m, size_t dim)
   return false;
 }
 
+/* 
+  Tightening step to get complete closure on Z. 
+*/
+bool hmap_tightening(bound_t* m, size_t dim, size_t intdim)
+{
+  
+  size_t i;
+  bound_t *c, t;
+  bound_init(t);
+  for (i=0;i<2*intdim;i++) {
+    c = m+matpos(i,i^1);
+    bound_fdiv_2(t,*c);
+    bound_mul_2(*c,t);      /* w[i,i¹] := 2*floor(w[i,i¹]/2) */
+  }
+  bound_clear(t);
+  return hmat_s_step(m,dim);
+
+}
+
 /* We use a variant of Floyd-Warshall shortest-path closure algorithm, with
    some extra constraint propagation step.
    
@@ -69,7 +88,7 @@ bool hmat_s_step(bound_t* m, size_t dim)
    Cubic time. Constant space.
  */
 
-bool hmat_close(bound_t* m, size_t dim)
+bool hmat_close(bound_t* m, size_t dim, size_t intdim)
 {
   size_t i,j,k;
   bound_t *c,ik,ik2,ij;
@@ -103,7 +122,7 @@ bool hmat_close(bound_t* m, size_t dim)
   
   bound_clear(ik); bound_clear(ik2); bound_clear(ij);
 
-  return hmat_s_step(m,dim);
+  return hmap_tightening(m,dim,intdim);
 }
 
 
@@ -117,7 +136,7 @@ bool hmat_close(bound_t* m, size_t dim)
    Quadratic time. Constant space.
 */
 
-bool hmat_close_incremental(bound_t* m, size_t dim, size_t v)
+bool hmat_close_incremental(bound_t* m, size_t dim, size_t intdim, size_t v)
 {
   size_t i,j,k;
   bound_t *c;
@@ -190,10 +209,11 @@ bool hmat_close_incremental(bound_t* m, size_t dim, size_t v)
       }
     } 
   }
+
   
   bound_clear(ik); bound_clear(ik2); bound_clear(ij);
 
-  return hmat_s_step(m,dim);
+  return hmap_tightening(m,dim,intdim);
 }
 
 

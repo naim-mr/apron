@@ -232,7 +232,7 @@ void oct_cache_closure(oct_internal_t* pr, oct_t* a)
 {
   if (a->closed || !a->m) return;
   a->closed = hmat_copy(pr,a->m,a->dim);
-  if (hmat_close(a->closed,a->dim)) {
+  if (hmat_close(a->closed,a->dim,a->intdim)) {
     /* empty! */
     hmat_free(pr,a->m,a->dim);
     hmat_free(pr,a->closed,a->dim);
@@ -255,7 +255,7 @@ void oct_close(oct_internal_t* pr, oct_t* a)
   }
   a->closed = a->m;
   a->m = NULL;
-  if (hmat_close(a->closed,a->dim)) {
+  if (hmat_close(a->closed,a->dim,a->intdim)) {
     hmat_free(pr,a->closed,a->dim);
     a->closed = NULL;
   }

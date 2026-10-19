@@ -177,8 +177,8 @@ static inline size_t matpos2(size_t i, size_t j)
 /* see oct_closure.c */
 
 bool hmat_s_step(bound_t* m, size_t dim);
-bool hmat_close(bound_t* m, size_t dim);
-bool hmat_close_incremental(bound_t* m, size_t dim, size_t v);
+bool hmat_close(bound_t* m, size_t dim, size_t intdim);
+bool hmat_close_incremental(bound_t* m, size_t dim, size_t intdim, size_t v);
 bool hmat_check_closed(bound_t* m, size_t dim);
 
 
