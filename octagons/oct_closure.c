@@ -59,23 +59,20 @@ bool hmat_s_step(bound_t* m, size_t dim)
   return false;
 }
 
-/* 
-  Tightening step to get complete closure on Z. 
-  cf. R. Bagnara, P. M. Hill, E. Zaffanella, "An Improved Tight Closure
+/* Tightening step to get complete closure on Z. 
+    cf. R. Bagnara, P. M. Hill, E. Zaffanella, "An Improved Tight Closure
    Algorithm for Integer Octagonal Constraints"
-
-  A unary constraint x <= c is encoded as x+ - x- = 2x <= w with w = 2c,
-  stored in m[2k+1][2k] (and -x <= c in m[2k][2k+1]).
-  When x is an integer, 2x is even, so 2x <= w is equivalent on Z to
-  2x <= 2*floor(w/2), the largest even integer not greater than w.
-  Only the first intdim (integer) variables are tightened.
-
-  Then hmat_s_step performs the strengthening, which also detects
-  Z-inconsistency (Theorem 3).
-
-
+   
+   A unary constraint x <= c is encoded as x+ - x- = 2x <= w with w = 2c,
+   stored in m[2k+1][2k] (and -x <= c in m[2k][2k+1]).
+   When x is an integer, 2x is even, so 2x <= w is equivalent on Z to
+   2x <= 2*floor(w/2), the largest even integer not greater than w.
+   Only the first intdim (integer) variables are tightened.
+  
+   Then hmat_s_step performs the strengthening, which also detects
+   Z-inconsistency (Theorem 3).
 */
-bool hmap_tightening(bound_t* m, size_t dim, size_t intdim)
+bool hmat_tightening(bound_t* m, size_t dim, size_t intdim)
 {
   
   size_t i;
@@ -84,7 +81,7 @@ bool hmap_tightening(bound_t* m, size_t dim, size_t intdim)
   for (i=0;i<2*intdim;i++) {
     c = m+matpos(i,i^1);
     bound_fdiv_2(t,*c);
-    bound_mul_2(*c,t);      /* w[i,i¹] := 2*floor(w[i,i¹]/2) */
+    bound_mul_2(*c,t);      /* w[i,i^1] := 2*floor(w[i,i^1]/2) */
   }
   bound_clear(t);
   return hmat_s_step(m,dim);
@@ -94,8 +91,7 @@ bool hmap_tightening(bound_t* m, size_t dim, size_t intdim)
 /* We use a variant of Floyd-Warshall shortest-path closure algorithm, with
    some extra constraint propagation step.
    
-   The result is the tight closure when all variables are
-   integer,and all bounds are integer. Otherwise it is sound but
+   The result is the tight closure when all variables and all bounds are integer. Otherwise it is sound but
    may not be exact.
 
    Returns true if the resulting matrix is empty, false otherwise
@@ -138,7 +134,7 @@ bool hmat_close(bound_t* m, size_t dim, size_t intdim)
   
   bound_clear(ik); bound_clear(ik2); bound_clear(ij);
 
-  return hmap_tightening(m,dim,intdim);
+  return hmat_tightening(m,dim,intdim);
 }
 
 
@@ -229,7 +225,7 @@ bool hmat_close_incremental(bound_t* m, size_t dim, size_t intdim, size_t v)
   
   bound_clear(ik); bound_clear(ik2); bound_clear(ij);
 
-  return hmap_tightening(m,dim,intdim);
+  return hmat_tightening(m,dim,intdim);
 }
 
 
