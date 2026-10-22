@@ -89,25 +89,31 @@ bool hmat_tightening(bound_t* m, size_t dim, size_t intdim)
 }
 
 
-/* Floor on all integer bounds. Implies exact tight closure on Z.
-   Quadratic time. Constant Space 
+/* Rounds down all bounds between integer variables, which is sound on Z.
+   This yields an integer octagonal graph, as required
+   by the tight closure.
+
+   Quadratic time. Constant space.
 */
-void hmat_floor_int(bound_t* m, size_t intdim){
-    size_t  i,j;
-    for (i = 0; i < 2*intdim; i++){
-      for (j = 0; j < 2*intdim; j++){ 
-        bound_floor(m[matpos2(i,j)],m[matpos2(i,j)]);
-      } 
-    }
+void hmat_floor_int(bound_t* m, size_t intdim)
+{
+  size_t i,j;
+  for (i=0;i<2*intdim;i++)
+    for (j=0;j<=(i|1);j++)
+      bound_floor(m[matpos(i,j)],m[matpos(i,j)]);
 }
 
 
 /* We use a variant of Floyd-Warshall shortest-path closure algorithm, with
    some extra constraint propagation step.
-   
-   The result is the tight closure when all variables and all bounds are integer. Otherwise it is sound but
 
-   may not be exact.
+   When intdim > 0 (tight closure enabled), bounds between integer
+   variables are first rounded down (hmat_floor_int), then Floyd-Warshall
+   is followed by the tightening of unary constraints and a single
+   strengthening step (hmat_tightening).
+   The result is the tight closure when all variables are integer and the
+   arithmetic is exact (e.g., MPQ, MPZ). With mixed integer/real variables,
+   or inexact arithmetic, it is sound but may not be the most precise.
 
    Returns true if the resulting matrix is empty, false otherwise
    (does not free the matrix)
