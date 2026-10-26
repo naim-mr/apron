@@ -307,7 +307,6 @@ static inline void bound_div_2(bound_t a, bound_t b)
   if (bound_infty(b)) bound_set_infty(a,bound_sgn(b));
   else { num_div_2(bound_numref(a),bound_numref(b)); _bound_inf(a); }
 }
-
 #endif
 
 

@@ -85,7 +85,6 @@ static inline size_t oct_tight_intdim(oct_internal_t* pr, size_t intdim)
 }
 
 
-
 /* loss of precision can be due to one of the following
    1) the algorithm is incomplete or
       the algorithm is incomplete on Z and we have intdim > 0
