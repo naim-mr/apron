@@ -74,18 +74,20 @@ bool hmat_s_step(bound_t* m, size_t dim)
 */
 bool hmat_tightening(bound_t* m, size_t dim, size_t intdim)
 {
-  
   size_t i;
   bound_t *c, t;
+
   bound_init(t);
+  
   for (i=0;i<2*intdim;i++) {
     c = m+matpos(i,i^1);
     bound_fdiv_2(t,*c);
     bound_mul_2(*c,t);      /* w[i,i^1] := 2*floor(w[i,i^1]/2) */
   }
+  
   bound_clear(t);
-  return hmat_s_step(m,dim);
 
+  return hmat_s_step(m,dim);
 }
 
 
@@ -98,11 +100,11 @@ bool hmat_tightening(bound_t* m, size_t dim, size_t intdim)
 void hmat_floor_int(bound_t* m, size_t intdim)
 {
   size_t i,j;
+  
   for (i=0;i<2*intdim;i++)
     for (j=0;j<=(i|1);j++)
       bound_floor(m[matpos(i,j)],m[matpos(i,j)]);
 }
-
 
 /* We use a variant of Floyd-Warshall shortest-path closure algorithm, with
    some extra constraint propagation step.
@@ -127,7 +129,6 @@ bool hmat_close(bound_t* m, size_t dim, size_t intdim)
 
   bound_init(ik); bound_init(ik2); bound_init(ij);
   hmat_floor_int(m,intdim);
-
   
   /* Floyd-Warshall */
   for (k=0;k<2*dim;k++) {
@@ -176,12 +177,8 @@ bool hmat_close_incremental(bound_t* m, size_t dim, size_t intdim, size_t v)
   bound_t *c;
   bound_t ij,ik,ik2;
 
-
-
   bound_init(ik); bound_init(ik2); bound_init(ij);
   hmat_floor_int(m,intdim);
-
-
 
   /* incremental Floyd-Warshall : v in end-point position */
   for (k=0;k<2*dim;k++) {
@@ -249,7 +246,6 @@ bool hmat_close_incremental(bound_t* m, size_t dim, size_t intdim, size_t v)
     } 
   }
 
-  
   bound_clear(ik); bound_clear(ik2); bound_clear(ij);
 
   return hmat_tightening(m,dim,intdim);
